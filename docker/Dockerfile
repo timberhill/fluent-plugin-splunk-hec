@@ -21,18 +21,22 @@ COPY licenses /licenses
 
 RUN wget -O jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && \
       chmod +x ./jq && \
-      cp jq /usr/bin
+      cp jq /usr/bin && \
+      gem install -N fluentd:1.9.1 \
+       fluent-plugin-systemd:1.0.2 \
+       fluent-plugin-concat:2.4.0 \
+       fluent-plugin-kubernetes_metadata_filter:2.4.2 \
+       fluent-plugin-prometheus:1.7.0 \
+       fluent-plugin-record-modifier:2.1.0 \
+       fluent-plugin-jq:0.5.1 \
+       fluent-plugin-splunk-hec:${VERSION} \
+       oj:3.10.2 \
+       multi_json:1.14.1 \
+       bigdecimal:2.0.0 \
+       kubeclient:4.6.0 && \
+      gem install -N /tmp/*.gem
 
-RUN gem install -N fluentd -v "1.4.0" \
-    && gem install -N fluent-plugin-systemd -v "1.0.2" \
-     && gem install -N fluent-plugin-concat -v "2.2.2" \
-     && gem install -N fluent-plugin-prometheus -v "1.3.0" \
-     && gem install -N fluent-plugin-jq -v "0.5.1" \
-     && gem install -N fluent-plugin-kubernetes_metadata_filter -v "2.1.2" \
-     && gem install -N oj -v "3.5.1" \
-     && gem install -N /tmp/*.gem
-
- RUN groupadd -r $FLUENT_USER && \
+RUN groupadd -r $FLUENT_USER && \
    useradd -r -g $FLUENT_USER $FLUENT_USER && \
    mkdir -p /fluentd/log fluentd/etc /fluentd/plugins &&\
    chown -R $FLUENT_USER /fluentd && chgrp -R $FLUENT_USER /fluentd
